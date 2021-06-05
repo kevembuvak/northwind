@@ -8,7 +8,12 @@ import kodlamaio.northwind.core.utilities.results.SuccessResult;
 import kodlamaio.northwind.dataAccess.abstracts.ProductDao;
 import kodlamaio.northwind.entities.concretes.Product;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -29,6 +34,22 @@ public class ProductManager implements ProductService {
     }
 
     @Override
+    public DataResult<List<Product>> getAllSorted() {
+        Sort sort = Sort.by(Sort.Direction.DESC, "productName");
+
+        return new SuccessDataResult<>(this.dao.findAll(sort));
+
+    }
+
+    @Override
+    public DataResult<List<Product>> getAll(int pageNo, int pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+
+        return new SuccessDataResult<>(this.dao.findAll(pageable).getContent());
+    }
+
+    @Override
     public Result add(Product product) {
         this.dao.save(product);
         return new SuccessResult("Ürün eklendi");
@@ -40,18 +61,18 @@ public class ProductManager implements ProductService {
     }
 
     @Override
-    public DataResult<Product> getByProductNameAndCategoryId(String productName, int categoryId) {
-        return new SuccessDataResult<>(this.dao.getByProductNameAndCategoryId(productName, categoryId), "İsme ve kategoriye göre ürün getirildi ");
+    public DataResult<Product> getByProductNameAndCategory_CategoryId(String productName, int categoryId) {
+        return new SuccessDataResult<>(this.dao.getByProductNameAndCategory_CategoryId(productName, categoryId), "İsme ve kategoriye göre ürün getirildi ");
     }
 
     @Override
-    public DataResult<List<Product>> getByProductNameOrCategoryId(String productName, int categoryId) {
-        return new SuccessDataResult<>(this.dao.getByProductNameOrCategoryId(productName, categoryId), "İsme veya kategoriye göre ürün getirildi ");
+    public DataResult<List<Product>> getByProductNameOrCategory(String productName, int categoryId) {
+        return new SuccessDataResult<>(this.dao.getByProductNameOrCategory(productName, categoryId), "İsme veya kategoriye göre ürün getirildi ");
     }
 
     @Override
-    public DataResult<List<Product>> getByCategoryIdIn(List<Integer> categories) {
-        return new SuccessDataResult<>(this.dao.getByCategoryIdIn(categories), "Kategori listesine göre ürün getirildi ");
+    public DataResult<List<Product>> getByCategoryIn(List<Integer> categories) {
+        return new SuccessDataResult<>(this.dao.getByCategoryIn(categories), "Kategori listesine göre ürün getirildi ");
     }
 
     @Override
